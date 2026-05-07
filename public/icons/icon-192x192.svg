@@ -1,0 +1,26 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="192" height="192" rx="48" fill="#2563eb"/>
+  
+  <!-- Delivery Truck Icon -->
+  <g transform="translate(48, 48)">
+    <!-- Truck Body -->
+    <rect x="8" y="32" width="64" height="40" rx="4" fill="white"/>
+    <!-- Truck Cabin -->
+    <rect x="72" y="40" width="24" height="32" rx="4" fill="white"/>
+    <!-- Wheels -->
+    <circle cx="24" cy="80" r="8" fill="#1e40af"/>
+    <circle cx="56" cy="80" r="8" fill="#1e40af"/>
+    <circle cx="80" cy="80" r="8" fill="#1e40af"/>
+    <!-- Package on truck -->
+    <rect x="32" y="20" width="16" height="12" rx="2" fill="#fbbf24"/>
+  </g>
+  
+  <!-- PymeTrack Text -->
+  <text x="96" y="140" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">
+    PYME
+  </text>
+  <text x="96" y="156" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12">
+    REPARTIDOR
+  </text>
+</svg>
