@@ -4,7 +4,7 @@ import { Repartidor, SesionRepartidor } from '@/types/repartidor';
 import { EvidenciaEntrega, RegistrarEvidenciaRequest } from '@/types/evidencia';
 
 // Configuración base de API
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082/api/v1';
 
 // Crear instancia de Axios
 const apiClient: AxiosInstance = axios.create({
@@ -43,10 +43,45 @@ apiClient.interceptors.response.use(
   }
 );
 
+const mapPedidoBackendToFrontend = (pedido: any): Pedido => ({
+  id: pedido.id,
+  numeroOrdenPyme: pedido.numeroOrdenPyme,
+
+  cliente: {
+    id: 0,
+    nombre: pedido.nombreCliente,
+    telefono: pedido.telefonoCliente || '',
+    email: pedido.emailCliente,
+  },
+
+  direccionEntrega: {
+    calle: pedido.direccionEntregaChile,
+    numero: '',
+    comuna: pedido.comunaEntregaChile,
+    ciudad: pedido.regionEntregaChile,
+  },
+
+  direccionRetiro: 'Centro de distribución PymeTrack',
+  productos: [
+      {
+        id: pedido.id,
+        nombre: `Pedido ${pedido.numeroOrdenPyme}`,
+        cantidad: 1,
+        precioUnitario: pedido.totalPedido,
+        subtotal: pedido.totalPedido,
+      },
+  ],
+  total: pedido.totalPedido,
+  estado: pedido.estadoPedidoPyme as EstadoPedido,
+  fechaCreacion: pedido.creadoEn,
+  notas: pedido.notasPedido,
+  repartidorId: pedido.repartidorId,
+});
+
 // API de Autenticación
 export const authAPI = {
   login: async (rut: string, password: string): Promise<SesionRepartidor> => {
-    const response: AxiosResponse<SesionRepartidor> = await apiClient.post('/repartidor/auth/login', {
+    const response: AxiosResponse<SesionRepartidor> = await apiClient.post('/auth/login', {
       rut,
       password,
     });
@@ -54,19 +89,19 @@ export const authAPI = {
   },
 
   logout: async (): Promise<void> => {
-    await apiClient.post('/repartidor/auth/logout');
+    await apiClient.post('/auth/logout');
     localStorage.removeItem('repartidor_token');
     localStorage.removeItem('repartidor_datos');
   },
 
   refreshToken: async (): Promise<SesionRepartidor> => {
-    const response: AxiosResponse<SesionRepartidor> = await apiClient.post('/repartidor/auth/refresh');
+    const response: AxiosResponse<SesionRepartidor> = await apiClient.post('/auth/refresh');
     return response.data;
   },
 
   verifyToken: async (): Promise<boolean> => {
     try {
-      await apiClient.get('/repartidor/auth/verify');
+      await apiClient.get('/auth/verify');
       return true;
     } catch {
       return false;
@@ -74,57 +109,75 @@ export const authAPI = {
   },
 };
 
-// API de Pedidos
 export const pedidosAPI = {
-  // Obtener pedidos disponibles para asignación
   getPedidosDisponibles: async (): Promise<PedidoDisponible[]> => {
-    const response: AxiosResponse<PedidoDisponible[]> = await apiClient.get('/repartidor/pedidos/disponibles');
-    return response.data;
+    const response = await apiClient.get('/pedidos');
+
+    return response.data
+      .filter((pedido: any) => pedido.estadoPedidoPyme === EstadoPedido.DISPONIBLE)
+      .map((pedido: any) => ({
+        ...mapPedidoBackendToFrontend(pedido),
+        tiempoEstimadoEntrega: 35,
+        distancia: 4.2,
+        prioridad: 'MEDIA',
+      }));
   },
 
-  // Obtener pedidos asignados al repartidor
   getMisPedidos: async (): Promise<Pedido[]> => {
-    const response: AxiosResponse<Pedido[]> = await apiClient.get('/repartidor/pedidos/asignados');
-    return response.data;
+    const response = await apiClient.get('/pedidos');
+
+    return response.data
+      .filter((pedido: any) =>
+        [
+          EstadoPedido.ASIGNADO,
+          EstadoPedido.PEDIDO_RETIRADO,
+          EstadoPedido.EN_CAMINO,
+          EstadoPedido.ENTREGADO,
+        ].includes(pedido.estadoPedidoPyme)
+      )
+      .map(mapPedidoBackendToFrontend);
   },
 
-  // Obtener detalles de un pedido específico
   getPedido: async (pedidoId: number): Promise<Pedido> => {
-    const response: AxiosResponse<Pedido> = await apiClient.get(`/repartidor/pedidos/${pedidoId}`);
-    return response.data;
+    const response = await apiClient.get(`/pedidos/${pedidoId}`);
+    return mapPedidoBackendToFrontend(response.data);
   },
 
-  // Aceptar un pedido disponible
   aceptarPedido: async (pedidoId: number): Promise<Pedido> => {
-    const response: AxiosResponse<Pedido> = await apiClient.post(`/repartidor/pedidos/${pedidoId}/aceptar`);
-    return response.data;
+    const response = await apiClient.post(`/pedidos/${pedidoId}/aceptar?repartidorId=1`);
+    return mapPedidoBackendToFrontend(response.data);
   },
 
-  // Rechazar un pedido disponible
   rechazarPedido: async (pedidoId: number, motivo: string): Promise<void> => {
-    await apiClient.post(`/repartidor/pedidos/${pedidoId}/rechazar`, { motivo });
+    await apiClient.post(`/pedidos/${pedidoId}/rechazar?repartidorId=1`);
   },
 
-  // Cambiar estado de un pedido asignado
   cambiarEstado: async (pedidoId: number, request: CambiarEstadoRequest): Promise<Pedido> => {
-    const response: AxiosResponse<Pedido> = await apiClient.put(`/repartidor/pedidos/${pedidoId}/estado`, request);
-    return response.data;
+    const response = await apiClient.patch(`/pedidos/${pedidoId}/estado`, {
+      estado: request.estado,
+      repartidorId: request.repartidorId || 1,
+      observacion: request.observacion || request.observacion || '',
+    });
+
+    return mapPedidoBackendToFrontend(response.data);
   },
 
-  // Obtener historial de pedidos
-  getHistorialPedidos: async (pagina: number = 1, limite: number = 20): Promise<{
-    pedidos: Pedido[];
-    total: number;
-    pagina: number;
-    totalPaginas: number;
-  }> => {
-    const response: AxiosResponse<{
-      pedidos: Pedido[];
-      total: number;
-      pagina: number;
-      totalPaginas: number;
-    }> = await apiClient.get(`/repartidor/pedidos/historial?pagina=${pagina}&limite=${limite}`);
-    return response.data;
+  getHistorialPedidos: async (pagina: number = 1, limite: number = 20) => {
+    const response = await apiClient.get('/pedidos');
+
+    const pedidos = response.data
+      .filter((pedido: any) =>
+        [EstadoPedido.ENTREGADO, EstadoPedido.CANCELADO, EstadoPedido.RECHAZADO]
+          .includes(pedido.estadoPedidoPyme)
+      )
+      .map(mapPedidoBackendToFrontend);
+
+    return {
+      pedidos,
+      total: pedidos.length,
+      pagina,
+      totalPaginas: 1,
+    };
   },
 };
 
@@ -132,13 +185,13 @@ export const pedidosAPI = {
 export const evidenciaAPI = {
   // Registrar evidencia de entrega
   registrarEvidencia: async (request: RegistrarEvidenciaRequest): Promise<EvidenciaEntrega> => {
-    const response: AxiosResponse<EvidenciaEntrega> = await apiClient.post('/repartidor/evidencia', request);
+    const response: AxiosResponse<EvidenciaEntrega> = await apiClient.post('/evidencia', request);
     return response.data;
   },
 
   // Obtener evidencia de un pedido
   getEvidencia: async (pedidoId: number): Promise<EvidenciaEntrega> => {
-    const response: AxiosResponse<EvidenciaEntrega> = await apiClient.get(`/repartidor/evidencia/${pedidoId}`);
+    const response: AxiosResponse<EvidenciaEntrega> = await apiClient.get(`/evidencia/${pedidoId}`);
     return response.data;
   },
 };
@@ -147,13 +200,13 @@ export const evidenciaAPI = {
 export const repartidorAPI = {
   // Obtener información del repartidor
   getPerfil: async (): Promise<Repartidor> => {
-    const response: AxiosResponse<Repartidor> = await apiClient.get('/repartidor/perfil');
+    const response: AxiosResponse<Repartidor> = await apiClient.get('/perfil');
     return response.data;
   },
 
   // Actualizar ubicación del repartidor
   actualizarUbicacion: async (lat: number, lng: number): Promise<void> => {
-    await apiClient.post('/repartidor/ubicacion', { lat, lng });
+    await apiClient.post('/ubicacion', { lat, lng });
   },
 
   // Obtener estadísticas
@@ -170,13 +223,13 @@ export const repartidorAPI = {
       tiempoPromedioEntrega: number;
       totalKilometros: number;
       calificacionPromedio: number;
-    }> = await apiClient.get('/repartidor/estadisticas');
+    }> = await apiClient.get('/estadisticas');
     return response.data;
   },
 
   // Enviar mensaje de emergencia
   enviarEmergencia: async (mensaje: string, ubicacion: { lat: number; lng: number }): Promise<void> => {
-    await apiClient.post('/repartidor/emergencia', { mensaje, ubicacion });
+    await apiClient.post('/emergencia', { mensaje, ubicacion });
   },
 };
 

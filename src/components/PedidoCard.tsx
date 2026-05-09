@@ -165,77 +165,99 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({
         </span>
       </div>
 
-      {/* Acciones */}
-      <div className="flex gap-2">
+      {/* Acciones según estado */}
+      <div className="flex gap-3 mt-6">
+
+        {/* =========================
+            PEDIDO A ASIGNAR
+          ========================= */}
         {esDisponible && (
           <>
             <button
               onClick={() => onAceptar?.(pedido.id)}
               className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors min-h-[44px]"
-              disabled={loading}
             >
-              {loading ? 'Procesando...' : '✅ Aceptar'}
+              ✅ Aceptar Pedido
             </button>
+
             <button
               onClick={() => onRechazar?.(pedido.id)}
               className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors min-h-[44px]"
-              disabled={loading}
             >
               ❌ Rechazar
             </button>
           </>
         )}
 
+        {/* =========================
+            PEDIDO ASIGNADO
+          ========================= */}
         {esAsignado && (
           <>
+            {/* Abrir Maps hacia tienda */}
             <button
               onClick={handleAbrirMapsRetiro}
               className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors min-h-[44px]"
             >
               🏪 Ir a Tienda
             </button>
+
+            {/* Cambiar estado → PEDIDO_RETIRADO */}
             <button
               onClick={() => onIniciarTrayecto?.(pedido.id)}
               className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors min-h-[44px]"
             >
-              🚚 Iniciar Entrega
+              📦 Confirmar Retiro
             </button>
           </>
         )}
 
+        {/* =========================
+            PEDIDO RETIRADO
+          ========================= */}
         {esRetirado && (
           <>
-            <button
-              onClick={() => onRegistrarEntrega?.(pedido.id)}
-              className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors min-h-[44px]"
-            >
-              📸 Registrar Entrega
-            </button>
+            {/* Abrir Maps hacia cliente */}
             <button
               onClick={handleAbrirMaps}
               className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors min-h-[44px]"
             >
               📍 Ver Ruta
             </button>
+
+            {/* Cambiar estado → EN_CAMINO */}
+            <button
+              onClick={() => onIniciarTrayecto?.(pedido.id)}
+              className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors min-h-[44px]"
+            >
+              🚚 Iniciar Entrega
+            </button>
           </>
         )}
 
+        {/* =========================
+            EN CAMINO
+          ========================= */}
         {esEnCamino && (
           <>
-            <button
-              onClick={() => onRegistrarEntrega?.(pedido.id)}
-              className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors min-h-[44px]"
-            >
-              📸 Registrar Entrega
-            </button>
+            {/* Navegación activa */}
             <button
               onClick={handleAbrirMaps}
               className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors min-h-[44px]"
             >
-              📍 Navegar
+              📍 Ver Ruta
+            </button>
+
+            {/* Cambiar estado → ENTREGADO */}
+            <button
+              onClick={() => onRegistrarEntrega?.(pedido.id)}
+              className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors min-h-[44px]"
+            >
+              ✅ Registrar Entrega
             </button>
           </>
         )}
+
       </div>
     </div>
   );

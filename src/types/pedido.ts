@@ -1,13 +1,13 @@
 // Estados del Pedido
 export enum EstadoPedido {
-  PENDIENTE = 'PENDIENTE',
   DISPONIBLE = 'DISPONIBLE',
   ASIGNADO = 'ASIGNADO',
+  ACEPTADO = 'ACEPTADO',
+  RECHAZADO = 'RECHAZADO',
   PEDIDO_RETIRADO = 'PEDIDO_RETIRADO',
   EN_CAMINO = 'EN_CAMINO',
   ENTREGADO = 'ENTREGADO',
-  CANCELADO = 'CANCELADO',
-  RECHAZADO = 'RECHAZADO'
+  CANCELADO = 'CANCELADO'
 }
 
 // Producto del Pedido
@@ -62,8 +62,10 @@ export interface Pedido {
 // Request para cambiar estado
 export interface CambiarEstadoRequest {
   estado: EstadoPedido;
+  repartidorId: number;
+  observacion?: string;
   notas?: string;
-  motivoRechazo?: string;
+  motivoRechado?: string;
 }
 
 // Pedido disponible para asignación
