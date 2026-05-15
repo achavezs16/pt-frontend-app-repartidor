@@ -1,0 +1,39 @@
+.pymetrack-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+}
+
+.pymetrack-logo__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary, #FF4B00);
+}
+
+.pymetrack-logo__text {
+  font-family: var(--font-family, 'Inter', sans-serif);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: inherit;
+}
+
+.pymetrack-logo__text--accent {
+  color: var(--color-primary, #FF4B00);
+}
+
+/* Sizes */
+.pymetrack-logo--sm .pymetrack-logo__icon { width: 20px; height: 20px; }
+.pymetrack-logo--sm .pymetrack-logo__text { font-size: 16px; }
+
+.pymetrack-logo--md .pymetrack-logo__icon { width: 32px; height: 32px; }
+.pymetrack-logo--md .pymetrack-logo__text { font-size: 24px; }
+
+.pymetrack-logo--lg .pymetrack-logo__icon { width: 48px; height: 48px; }
+.pymetrack-logo--lg .pymetrack-logo__text { font-size: 36px; }
+
+/* In dark backgrounds */
+.sidebar .pymetrack-logo__text {
+  color: white;
+}

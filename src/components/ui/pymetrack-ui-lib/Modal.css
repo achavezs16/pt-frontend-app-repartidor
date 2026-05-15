@@ -1,0 +1,105 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(10, 15, 30, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 24px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  background: var(--card-bg, #FFFFFF);
+  border: 1px solid var(--card-border, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  overflow: hidden;
+}
+
+.modal--sm { max-width: 400px; }
+.modal--md { max-width: 500px; }
+.modal--lg { max-width: 700px; }
+.modal--xl { max-width: 900px; }
+.modal--full { max-width: 100%; margin: 16px; }
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  background-color: #F8FAFC;
+  border-bottom: 1px solid var(--card-border, #E2E8F0);
+}
+
+.modal__title {
+  font-family: var(--font-family, inherit);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-secondary, #0A0F1E);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.modal__close {
+  margin-left: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full, 9999px);
+  border: none;
+  background-color: #E2E8F0;
+  color: var(--text-muted, #64748B);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal__close:hover {
+  background-color: var(--color-danger, #FF2E2E);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.modal__close:focus {
+  outline: 2px solid var(--color-primary, #FF4B00);
+  outline-offset: 2px;
+}
+
+.modal__body {
+  padding: 32px;
+  max-height: 65vh;
+  overflow-y: auto;
+  color: var(--text-muted, #64748B);
+  line-height: 1.6;
+}
+
+/* Custom scrollbar for modal body */
+.modal__body::-webkit-scrollbar {
+  width: 8px;
+}
+.modal__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal__body::-webkit-scrollbar-thumb {
+  background-color: #CBD5E1;
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}

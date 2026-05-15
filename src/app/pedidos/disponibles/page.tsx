@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { PedidoCard } from '@/components/PedidoCard';
 import EstadoBadge from '@/components/EstadoBadge';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/pymetrack-ui-lib/Button';
 import { usePedidos } from '@/hooks/usePedidos';
 import { Pedido, EstadoPedido } from '@/types/pedido';
 
