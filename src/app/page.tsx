@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { usePedidos } from '@/hooks/usePedidos';
 
 export default function Home() {
   const [isOnline, setIsOnline] = useState(true);
@@ -10,6 +11,7 @@ export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [repartidor, setRepartidor] = useState<any>(null);
   const router = useRouter();
+  const { pedidosDisponibles, misPedidos } = usePedidos();
 
   useEffect(() => {
     // Verificar autenticación
@@ -77,6 +79,11 @@ export default function Home() {
     localStorage.removeItem('repartidor_datos');
     router.push('/login');
   };
+
+  const pedidosHoy = pedidosDisponibles.length + misPedidos.length;
+    const entregadosHoy = misPedidos.filter(
+      (pedido) => pedido.estado === 'ENTREGADO'
+  ).length;
 
   // Mostrar loading mientras verifica autenticación
   if (!isAuthenticated) {
@@ -162,11 +169,11 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">📊 Tu Día</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">0</div>
+                <div className="text-2xl font-bold text-blue-600">{pedidosHoy}</div>
                 <div className="text-sm text-gray-600">Pedidos Hoy</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">0</div>
+                <div className="text-2xl font-bold text-green-600">{entregadosHoy}</div>
                 <div className="text-sm text-gray-600">Entregados</div>
               </div>
             </div>
