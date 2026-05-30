@@ -3,7 +3,7 @@
 import React from 'react';
 import { Pedido, PedidoDisponible, EstadoPedido } from '@/types/pedido';
 import { EstadoBadge } from '@/components/EstadoBadge';
-import Tooltip from '@/components/ui/Tooltip';
+import Tooltip from '@/components/ui/pymetrack-ui-lib/Tooltip';
 import { cn } from '@/lib/utils';
 
 interface PedidoCardProps {

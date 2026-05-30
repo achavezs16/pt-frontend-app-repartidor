@@ -1,0 +1,99 @@
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.input-wrapper--full-width {
+  width: 100%;
+}
+
+.input-label {
+  display: block;
+  font-family: var(--font-family, inherit);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-secondary, #0A0F1E);
+  margin-bottom: 0.5rem;
+}
+
+.input-field {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-md, 8px);
+  border: 1.5px solid var(--card-border, #E2E8F0);
+  background: var(--card-bg, #FFFFFF);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  color: var(--text-main, #0A0F1E);
+  outline: none;
+  font-family: var(--font-family, inherit);
+}
+
+.input-field::placeholder {
+  color: #94A3B8;
+}
+
+.input-field:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #F8FAFC;
+}
+
+.input-field--default:hover:not(:disabled) {
+  border-color: #CBD5E1;
+}
+
+.input-field--default:focus {
+  border-color: var(--color-primary, #FF4B00);
+  box-shadow: 0 0 0 4px rgba(255, 75, 0, 0.1), var(--shadow-sm);
+}
+
+.input-field--error {
+  border-color: var(--color-danger, #FF2E2E);
+}
+.input-field--error:focus {
+  border-color: var(--color-danger, #FF2E2E);
+  box-shadow: 0 0 0 4px rgba(255, 46, 46, 0.1), var(--shadow-sm);
+}
+
+.input-field--success {
+  border-color: var(--color-success, #00B87C);
+}
+.input-field--success:focus {
+  border-color: var(--color-success, #00B87C);
+  box-shadow: 0 0 0 4px rgba(0, 184, 124, 0.1), var(--shadow-sm);
+}
+
+.input-field--sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.input-field--md {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.input-field--lg {
+  padding: 1rem 1.25rem;
+  font-size: 1.125rem;
+}
+
+.input-message {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  font-family: var(--font-family, inherit);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.input-message--error {
+  color: var(--color-danger, #FF2E2E);
+}
+
+.input-message--helper {
+  color: var(--text-muted, #64748B);
+}
