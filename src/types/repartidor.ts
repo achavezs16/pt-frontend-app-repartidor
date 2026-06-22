@@ -46,13 +46,24 @@ export interface UbicacionActual {
 // Estado de sesión del repartidor
 export interface SesionRepartidor {
   token: string;
-  repartidor: Repartidor;
-  fechaInicio: string;
-  fechaUltimaActividad: string;
-  dispositivo: {
-    tipo: 'MOVIL' | 'TABLET';
-    modelo: string;
-    versionApp: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+  expiresAt: string;
+  userId: number;
+  nombre: string;
+  role: string;
+  permissions: string[];
+  requiresPasswordChange: boolean;
+  message: string;
+  userInfo: {
+    id: number;
+    nombre: string;
+    email: string;
+    role: string;
+    permissions: string[];
+    rutPyme?: string | null;
+    pymeId?: number | null;
   };
 }
 
