@@ -91,7 +91,9 @@ export const usePedidos = (): UsePedidosReturn => {
 
         await pedidosAPI.cambiarEstado(pedidoId, {
           estado,
-          repartidorId: 1,
+          repartidorId: Number(
+            JSON.parse(localStorage.getItem('repartidor_datos') || '{}')?.id || 1
+          ),
           observacion: notas,
         });
 

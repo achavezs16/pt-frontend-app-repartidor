@@ -11,12 +11,13 @@ interface EstadoBadgeProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const estadoConfig = {
-  [EstadoPedido.PENDIENTE]: {
-    color: 'bg-gray-100 text-gray-800 border-gray-200',
-    icon: '⏳',
-    label: 'Pendiente',
-  },
+type EstadoConfig = {
+  color: string;
+  icon: string;
+  label: string;
+};
+
+const estadoConfig: Partial<Record<EstadoPedido, EstadoConfig>> = {
   [EstadoPedido.DISPONIBLE]: {
     color: 'bg-blue-100 text-blue-800 border-blue-200',
     icon: '🔔',

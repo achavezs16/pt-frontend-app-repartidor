@@ -62,15 +62,23 @@ const mapPedidoBackendToFrontend = (pedido: any): Pedido => ({
   },
 
   direccionRetiro: 'Centro de distribución PymeTrack',
-  productos: [
-      {
-        id: pedido.id,
-        nombre: `Pedido ${pedido.numeroOrdenPyme}`,
-        cantidad: 1,
-        precioUnitario: pedido.totalPedido,
-        subtotal: pedido.totalPedido,
-      },
-  ],
+  productos: pedido.items && pedido.items.length > 0
+    ? pedido.items.map((item: any) => ({
+        id: item.productoId ?? item.id,
+        nombre: item.nombreProducto,
+        cantidad: item.cantidad,
+        precioUnitario: Number(item.precioUnitario || 0),
+        subtotal: Number(item.precioUnitario || 0) * Number(item.cantidad || 1),
+      }))
+    : [
+        {
+          id: pedido.id,
+          nombre: `Pedido ${pedido.numeroOrdenPyme}`,
+          cantidad: 1,
+          precioUnitario: pedido.totalPedido,
+          subtotal: pedido.totalPedido,
+        },
+      ],
   total: pedido.totalPedido,
   estado: pedido.estadoPedidoPyme as EstadoPedido,
   fechaCreacion: pedido.creadoEn,
@@ -80,11 +88,12 @@ const mapPedidoBackendToFrontend = (pedido: any): Pedido => ({
 
 // API de Autenticación
 export const authAPI = {
-  login: async (rut: string, password: string): Promise<SesionRepartidor> => {
+  login: async (email: string, password: string): Promise<SesionRepartidor> => {
     const response: AxiosResponse<SesionRepartidor> = await apiClient.post('/auth/login', {
-      rut,
+      email,
       password,
     });
+
     return response.data;
   },
 
@@ -107,6 +116,19 @@ export const authAPI = {
       return false;
     }
   },
+};
+
+const getRepartidorId = (): number => {
+  const datosRaw = localStorage.getItem('repartidor_datos');
+
+  if (!datosRaw) return 1;
+
+  try {
+    const datos = JSON.parse(datosRaw);
+    return Number(datos.id ?? datos.userId ?? 1);
+  } catch {
+    return 1;
+  }
 };
 
 export const pedidosAPI = {
@@ -144,19 +166,23 @@ export const pedidosAPI = {
   },
 
   aceptarPedido: async (pedidoId: number): Promise<Pedido> => {
-    const response = await apiClient.post(`/pedidos/${pedidoId}/aceptar?repartidorId=1`);
+    const repartidorId = getRepartidorId();
+    const response = await apiClient.post(`/pedidos/${pedidoId}/aceptar?repartidorId=${repartidorId}`);
     return mapPedidoBackendToFrontend(response.data);
   },
 
   rechazarPedido: async (pedidoId: number, motivo: string): Promise<void> => {
-    await apiClient.post(`/pedidos/${pedidoId}/rechazar?repartidorId=1`);
+    const repartidorId = getRepartidorId();
+    await apiClient.post(`/pedidos/${pedidoId}/rechazar?repartidorId=${repartidorId}`);
   },
 
   cambiarEstado: async (pedidoId: number, request: CambiarEstadoRequest): Promise<Pedido> => {
+    const repartidorId = request.repartidorId || getRepartidorId();
+
     const response = await apiClient.patch(`/pedidos/${pedidoId}/estado`, {
       estado: request.estado,
-      repartidorId: request.repartidorId || 1,
-      observacion: request.observacion || request.observacion || '',
+      repartidorId,
+      observacion: request.observacion || '',
     });
 
     return mapPedidoBackendToFrontend(response.data);
